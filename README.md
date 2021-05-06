@@ -12,6 +12,16 @@
 6. Uso do widget GestureDetection ou SwipeDetector para redefinir uma gesture "do seu jeito" 
 7. Fazer acesso HTTP a alguma free API para buscar alguma formação específica (*) e usar async/await e try-fetch para captar erros
 
+### Builds 
+ 
+As builds serão enviadas pelo EAD e também estão na pasta:
+
+```
+.\Day2Day_INF1300\day_2_day\build\app\outputs\flutter-apk\app-armeabi-v7a-release.apk
+```
+
+Build testada e debugada no Emulador: Nexus 5X API 30 x86
+
 ### Relatório das Entregas
 ## 1. Navegação entre telas: com pelo menos 4 namedRoutes
 
