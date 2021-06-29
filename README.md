@@ -75,7 +75,7 @@ Agora vou desenvolver um pouco mais os esses pontos e os aspectos técnicos do a
 
 Nessa tela montei um esqueleto de um sistema de login, ele não está funcional pois está muito fora da ementa da dsiciplina e do escopo do projeto em si.
 
-![image](MD_IMGS\Code_4L6qZyjqNc.png)
+![image](day_2_day/MD_IMGS/Code_4L6qZyjqNc.png)
 
 Essa tela possui dois aspectos importantes para o projeto.
 A parte do login é gerida por uma classe <b>User</b> que utiliza <b>Mobx</b> para gerar variáveis oberváveis por widgets.
@@ -161,7 +161,7 @@ Toda a mudança nas variável locale faz com que certos Widgets de texto execute
 
 <b>(gif somente disponível na versão não pdf no github)</b>
 
-![alt Text](MD_IMGS\2o8zQBOT5C.gif)
+![alt Text](day_2_day/MD_IMGS/2o8zQBOT5C.gif)
 
 
 <b>welcomeUser_Screen.dart l:141</b>
@@ -184,7 +184,7 @@ A parte de backstage server se mistura com a utilização de notificações e a 
 
 <b>Tela de projetos</b>
 
-![image](MD_IMGS\qemu-system-x86_64_FeplRoSmWp.png)
+![image](day_2_day/MD_IMGS/qemu-system-x86_64_FeplRoSmWp.png)
 
 Os dados são obtidos diretamente de um servidor, e com os json recebidos são construídas as instâncias de projetos e tarefas.
 
@@ -224,15 +224,15 @@ Temos 2 exemplos:
 
 - Criação de um novo projeto
 
-![image](MD_IMGS\qemu-system-x86_64_F9hZrb9KJH.png)
+![image](day_2_day/MD_IMGS/qemu-system-x86_64_F9hZrb9KJH.png)
 
-![image](MD_IMGS\w54hpW62IL.png)
+![image](day_2_day/MD_IMGS/w54hpW62IL.png)
 
 - Criação de uma nova tarefa
 
-![image](MD_IMGS\qemu-system-x86_64_GQtGH01t7b.png)
+![image](day_2_day/MD_IMGS/qemu-system-x86_64_GQtGH01t7b.png)
 
-![image](MD_IMGS\fj2I7vUWvx.png)
+![image](day_2_day/MD_IMGS/fj2I7vUWvx.png)
 
 Os dados são também recebidos com requests
 
@@ -291,11 +291,11 @@ A biblioteca fl_charts é usada parada então, gerar gráficos que em realtime d
 
 - Em segundos
 
-![image](MD_IMGS\qemu-system-x86_64_mzqTkMuzHm.png)
+![image](day_2_day/MD_IMGS/qemu-system-x86_64_mzqTkMuzHm.png)
 
 - Em minutos
 
-![image](MD_IMGS\qemu-system-x86_64_S1QQmykrAr.png)
+![image](day_2_day/MD_IMGS/qemu-system-x86_64_S1QQmykrAr.png)
 
 Sua implementação está isolada no <b>task_chart.dart</b>
 
@@ -305,7 +305,7 @@ Ela fez com que fosse possível a rápida navegação do Day2Day.
 
 <b>GIF</b>
 
-![alt text](MD_IMGS\5H4ep7xZvE.gif)
+![alt text](day_2_day/MD_IMGS/5H4ep7xZvE.gif)
 
 ---
 
