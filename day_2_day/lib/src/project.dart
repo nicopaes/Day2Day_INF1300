@@ -1,9 +1,16 @@
+import 'dart:ui';
+
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:day_2_day/src/notification_service.dart';
 import 'package:day_2_day/src/task.dart';
+import 'package:day_2_day/store/localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:convert';
+
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class D2D_Project {
   var name;
@@ -12,13 +19,13 @@ class D2D_Project {
   String id;
 
   var associatedTasks;
+  bool hasActivetasks;
 
   D2D_Project(String newName) {
     this.name = newName;
     this.timeOfCreation = DateTime.now();
     this.totalSumSeconds = 0;
     this.associatedTasks = <Task>{};
-    this.id = "";
   }
 
   D2D_Project.fromInfo(
@@ -29,7 +36,7 @@ class D2D_Project {
       @required this.associatedTasks});
 
   factory D2D_Project.fromJson(Map<String, dynamic> json) {
-    List<Task> newTaskList = [];
+    Set<Task> newTaskList = {};
     for (var t in json['associatedTasks']) {
       Task newT = Task.fromJson(t);
       print(newT.name);
@@ -44,12 +51,40 @@ class D2D_Project {
   }
 
   void addTask(Task newTask) {
-    if (!associatedTasks.contains(newTask)) {
-      associatedTasks.add(newTask);
-      print("Task added");
+    addTaskServerFetch(newTask);
+  }
+
+  Future<Task> addTaskServer(Task newTask) async {
+    final response = await http.post(
+        Uri.https('day2dayapitest1.herokuapp.com',
+            '/projects/$id/tasks/${newTask.name}'),
+        headers: {
+          "Accept": "application/json",
+          "Access-Control_Allow_Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST"
+        });
+    if (response.statusCode == 200) {
+      var firstPass = json.decode(response.body);
+      var secondPass = json.decode(firstPass);
+      Task t = new Task.fromJson(secondPass);
+      print(t.id);
+      return t;
     } else {
-      print("This Project already contains this task");
+      return null;
     }
+  }
+
+  void addTaskServerFetch(Task newTask) {
+    var future = addTaskServer(newTask);
+    future.then((value) {
+      if (value != null) {
+        associatedTasks.add(value);
+        print("Task created sucessfuly");
+        NotificationService().showNotificationCustom(
+            "Sucessfully created new Task",
+            'New project was created on the server: ${newTask.name}');
+      }
+    });
   }
 
   void printTasks() {
@@ -87,57 +122,109 @@ class D2D_Project {
     return "$hours$minutes:$seconds";
   }
 
+  int _getTaskCount() {
+    if (associatedTasks is Set<Task>) {
+      return (associatedTasks as Set<Task>).length;
+    } else if (associatedTasks is List<Task>) {
+      return (associatedTasks as List<Task>).length;
+    } else
+      return 0;
+  }
+
+  Text _buildTotalTimeLabel() {
+    return Text(_getTimeString(),
+        style: TextStyle(
+            fontFeatures: [FontFeature.tabularFigures()],
+            fontWeight: FontWeight.bold,
+            fontSize: 30.0,
+            color: Color(0xFF2e282a)));
+  }
+
   BoxDecoration myBoxDecoration() {
     return BoxDecoration(
         border: Border.all(width: 1), color: Colors.amber.shade900);
   }
 
-  Widget getWidget(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.of(context).pushNamed('/second', arguments: this),
-      child: Card(
-          shadowColor: Colors.cyan.shade100,
-          color: Colors.amberAccent,
-          child: Container(
-              padding: EdgeInsets.all(30.0),
-              margin: EdgeInsets.all(15.0),
-              alignment: Alignment.centerLeft,
-              color: Colors.black87,
-              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    width: 80,
-                    child: Container(
-                        //color: Colors.red.shade200,
-                        child: Column(
-                      children: [
-                        Container(
-                          decoration: myBoxDecoration(),
-                          child: AutoSizeText(
-                            this.name,
-                            textAlign: TextAlign.center,
-                            minFontSize: 20,
-                          ),
-                        ),
-                      ],
-                    )),
+  Widget getWidget(
+      BuildContext context, String userName, Localization currentL) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: 200,
+        decoration: BoxDecoration(
+            color: hasActivetasks == false
+                ? Colors.amber.shade300
+                : Colors.amber.shade100,
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        padding: EdgeInsets.only(top: 10, bottom: 10),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                name,
+                style: GoogleFonts.aldrich(
+                  color: Color(0xFF2e282a),
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Positioned(
+              left: 10,
+              bottom: 50,
+              child: Text(
+                //DETAILED DESCRIPTION WHEN
+                currentL.getLocalString("projectInfo0") +
+                    ": " +
+                    _getTaskCount().toString(),
+                style: GoogleFonts.aldrich(
+                  color: Color(0xFF2e282a),
+                  fontSize: 30.0,
+                ),
+              ),
+            ),
+            Positioned(
+                left: 10,
+                bottom: -5,
+                child: Container(
+                  color: Colors.amber.shade100,
+                  width: 90,
+                  height: 50,
+                )),
+            Positioned(
+              left: 10,
+              bottom: 25,
+              child: Text(
+                currentL.getLocalString("projectInfo1"),
+                style: GoogleFonts.aldrich(
+                  color: Color(0xFF2e282a),
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Positioned(left: 10, bottom: -5, child: _buildTotalTimeLabel()),
+            Positioned(
+              right: 10,
+              bottom: -5,
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pushNamed('/second',
+                    arguments: [this, userName, currentL.locale]),
+                style: ElevatedButton.styleFrom(primary: Color(0xFF2e282a)),
+                child: Text(
+                  currentL.getLocalString("projectInfo2"),
+                  style: GoogleFonts.aldrich(
+                    color: Colors.amber.shade200,
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Column(
-                  children: [
-                    Container(
-                      //color: Colors.green.shade200,
-                      child: Row(
-                        children: [
-                          AutoSizeText("     Minutes: ", minFontSize: 18),
-                          AutoSizeText(_getTimeString(), minFontSize: 18),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ]))),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
